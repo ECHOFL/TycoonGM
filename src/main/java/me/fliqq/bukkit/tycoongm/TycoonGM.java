@@ -1,4 +1,4 @@
-package me.fliqq.tycoongm;
+package me.fliqq.bukkit.tycoongm;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -6,6 +6,11 @@ public class TycoonGM extends JavaPlugin
 {
     @Override
     public void onEnable(){
+
+
+
+
+        
         messages();
     }
         
