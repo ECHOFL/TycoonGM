@@ -1,0 +1,48 @@
+displayName: '&b&lDiamond Generator'
+item: DIAMOND
+blockType: DIAMOND_BLOCK
+itemDisplayName: '&b&lEnchanted Diamond'
+sellPrice: 100.0
+hologramLines:
+  - '&b&l✦ &3&lDiamond Generator &b&l✦'
+  - '&eTier: &f{tier}'
+  - '&eProduces: &f{rate} &bdiamonds&f/min'
+  - '&7&o(Right-click to collect)'
+generatorLore:
+  - '&7Harness the power of the earth'
+  - '&7to create precious diamonds!'
+  - ''
+  - '&eProduction:'
+  - '&7 ➥ Tier 1: &b10 &7diamonds/min'
+  - '&7 ➥ Tier 5: &b50 &7diamonds/min'
+  - ''
+  - '&6&lUpgrade to increase production!'
+itemLore:
+  - '&7Mined from a Tier {tier} Diamond Generator'
+  - ''
+  - '&b&l✦ &3&lMagical Properties &b&l✦'
+  - '&7 ▪ Enhances tool durability'
+  - '&7 ▪ Grants night vision when held'
+  - ''
+  - '&e&oSell at the market for profit!'
+tiers:
+  1:
+    price: 10000
+    productionRate: 10
+    productionInterval: 60
+  2:
+    price: 25000
+    productionRate: 20
+    productionInterval: 55
+  3:
+    price: 50000
+    productionRate: 30
+    productionInterval: 50
+  4:
+    price: 100000
+    productionRate: 40
+    productionInterval: 45
+  5:
+    price: 250000
+    productionRate: 50
+    productionInterval: 40

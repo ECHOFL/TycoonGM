@@ -4,16 +4,16 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 
-public class BasicGenerator extends AGenerator{
-    public BasicGenerator(UUID ownerId,String generatorId, Location location, int tier, String resourceType){
-        super(ownerId,generatorId, location, tier, resourceType);
+public class BasicGenerator extends AbstractGenerator{
+
+    public BasicGenerator(UUID ownerId, GeneratorType type, GeneratorTier tier, Location location){
+        super(ownerId, type, tier, location);
     }
 
     @Override
-    protected double calculateBaseProductionRate() {
-        return 10.0;
+    public double produce() {
+        double produced = currentTier.getProductionRate();
+        //TODO ADD LOGIC TO UPDATE HOLOGRAM, SPAWN ITEMS, ETC!
+        return produced;
     }
-
 }
-
-

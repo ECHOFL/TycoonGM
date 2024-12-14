@@ -5,12 +5,14 @@ import java.util.UUID;
 import org.bukkit.Location;
 
 public interface IGenerator {
-    UUID getOwnerId();
     String getGeneratorId();
-    Location geLocation();
+    UUID getOwnerId();
+    String getType();
     int getTier();
-    double getProductionRate();
     void upgrade();
     double produce();
-
+    Location getLocation();
+    GeneratorType getGeneratorType();
+    GeneratorTier getCurrentTier();
+    boolean canUpgrade();
 }

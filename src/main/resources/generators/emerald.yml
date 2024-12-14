@@ -1,0 +1,48 @@
+displayName: '&a&lEmerald Generator'
+item: EMERALD
+blockType: EMERALD_BLOCK
+itemDisplayName: '&a&lMystic Emerald'
+sellPrice: 75.0
+hologramLines:
+  - '&2&l❈ &a&lEmerald Generator &2&l❈'
+  - '&eTier: &f{tier}'
+  - '&eProduces: &f{rate} &aemerald&f/min'
+  - '&7&o(Right-click to collect)'
+generatorLore:
+  - '&7Channel the essence of nature'
+  - '&7to manifest emerald crystals!'
+  - ''
+  - '&eProduction Rates:'
+  - '&7 ➥ Tier 1: &a8 &7emeralds/min'
+  - '&7 ➥ Tier 5: &a40 &7emeralds/min'
+  - ''
+  - '&6&lUpgrade for faster production!'
+itemLore:
+  - '&7Created by a Tier {tier} Emerald Generator'
+  - ''
+  - '&2&l❈ &a&lMystical Attributes &2&l❈'
+  - '&7 ▪ Boosts crop growth nearby'
+  - '&7 ▪ Attracts friendly mobs'
+  - ''
+  - '&e&oTrade at the village for rare items!'
+tiers:
+  1:
+    price: 7500
+    productionRate: 8
+    productionInterval: 60
+  2:
+    price: 20000
+    productionRate: 16
+    productionInterval: 55
+  3:
+    price: 40000
+    productionRate: 24
+    productionInterval: 50
+  4:
+    price: 80000
+    productionRate: 32
+    productionInterval: 45
+  5:
+    price: 200000
+    productionRate: 40
+    productionInterval: 40
