@@ -7,7 +7,6 @@ import org.bukkit.Location;
 public interface IGenerator {
     String getGeneratorId();
     UUID getOwnerId();
-    String getType();
     int getTier();
     void upgrade();
     double produce();

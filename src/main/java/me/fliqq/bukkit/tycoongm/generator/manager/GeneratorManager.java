@@ -16,7 +16,6 @@ import me.fliqq.bukkit.tycoongm.generator.AbstractGenerator;
 import me.fliqq.bukkit.tycoongm.generator.BasicGenerator;
 import me.fliqq.bukkit.tycoongm.generator.GeneratorType;
 import me.fliqq.bukkit.tycoongm.generator.IGenerator;
-import world.bentobox.bentobox.BentoBox;
 
 public class GeneratorManager {
     private final TycoonGM plugin;
@@ -24,11 +23,9 @@ public class GeneratorManager {
     private final PlayerGeneratorManager playerGeneratorManager;
     private final GeneratorLoader generatorLoader;
     private final Map<String, IGenerator> allGenerators;
-    private final BentoBox bentoBox;
 
-    public GeneratorManager(TycoonGM plugin, PlayerGeneratorDataManager playerGeneratorDataManager, BentoBox bentoBox) {
+    public GeneratorManager(TycoonGM plugin, PlayerGeneratorDataManager playerGeneratorDataManager) {
         this.plugin=plugin;
-        this.bentoBox=bentoBox;
         this.generatorTypes = new HashMap<>();
         this.allGenerators=new HashMap<>();
         this.playerGeneratorManager = new PlayerGeneratorManager(this, playerGeneratorDataManager);
@@ -97,14 +94,13 @@ public class GeneratorManager {
 
     public String getGeneratorIdFromItem(ItemStack item) {
         if (!isGeneratorItem(item)) return null;
-        NamespacedKey key = new NamespacedKey(plugin, "generator-type");
+        NamespacedKey key = new NamespacedKey(plugin, "generator-id");
         return item.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
     }
 
-    public IGenerator createGenerator(UUID ownerId, String generatorType, Location location) {
-        GeneratorType type = getGeneratorType(generatorType);
+    public IGenerator createGenerator(UUID ownerId, GeneratorType type, Location location) {
         if (type == null) {
-            throw new IllegalArgumentException("Invalid generator type: " + generatorType);
+            throw new IllegalArgumentException("Invalid generator type");
         }
         return new BasicGenerator(ownerId, type, type.getTiers().get(1), location);
     }

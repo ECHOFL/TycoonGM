@@ -34,8 +34,9 @@ public class TycoonGM extends JavaPlugin
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        
         playerGeneratorDataManager=new PlayerGeneratorDataManager(this);
-        generatorManager=new GeneratorManager(this, playerGeneratorDataManager, bentoBox);
+        generatorManager=new GeneratorManager(this, playerGeneratorDataManager);
         generatorManager.loadGenerators();
         generatorPlacementManager = new GeneratorPlacementManager(this, bentoBox, generatorManager);
         getServer().getPluginManager().registerEvents(generatorPlacementManager, this);

@@ -43,11 +43,6 @@ public abstract class AbstractGenerator implements IGenerator{
     }
 
     @Override
-    public String getType() {
-        return type.getId();
-    }
-
-    @Override
     public int getTier() {
         return currentTier.getTier();
     }

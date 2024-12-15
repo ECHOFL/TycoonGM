@@ -9,6 +9,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import me.fliqq.bukkit.tycoongm.TycoonGM;
+import me.fliqq.bukkit.tycoongm.generator.GeneratorType;
 import me.fliqq.bukkit.tycoongm.generator.IGenerator;
 import me.fliqq.bukkit.tycoongm.generator.manager.GeneratorManager;
 import world.bentobox.bentobox.BentoBox;
@@ -16,12 +17,10 @@ import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.database.objects.Island;
 
 public class GeneratorPlacementManager implements Listener {
-    private final TycoonGM plugin;
     private final BentoBox bentoBox;
     private final GeneratorManager generatorManager;
 
     public GeneratorPlacementManager(TycoonGM plugin, BentoBox bentoBox, GeneratorManager generatorManager) {
-        this.plugin = plugin;
         this.bentoBox = bentoBox;
         this.generatorManager = generatorManager;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -52,7 +51,8 @@ public class GeneratorPlacementManager implements Listener {
 
     private void placeGenerator(Player player, Location location, ItemStack item) {
         String generatorId = generatorManager.getGeneratorIdFromItem(item);
-        IGenerator generator = generatorManager.createGenerator(player.getUniqueId(), generatorId, location);
+        GeneratorType type = generatorManager.getGeneratorFromId(generatorId).getGeneratorType();
+        IGenerator generator = generatorManager.createGenerator(player.getUniqueId(), type, location);
         generatorManager.placeGenerator(generator);
         player.sendMessage("Generator placed successfully!");
     }
