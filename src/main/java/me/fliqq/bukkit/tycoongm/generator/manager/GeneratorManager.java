@@ -16,6 +16,7 @@ import me.fliqq.bukkit.tycoongm.generator.AbstractGenerator;
 import me.fliqq.bukkit.tycoongm.generator.BasicGenerator;
 import me.fliqq.bukkit.tycoongm.generator.GeneratorType;
 import me.fliqq.bukkit.tycoongm.generator.IGenerator;
+import world.bentobox.bentobox.BentoBox;
 
 public class GeneratorManager {
     private final TycoonGM plugin;
@@ -23,9 +24,11 @@ public class GeneratorManager {
     private final PlayerGeneratorManager playerGeneratorManager;
     private final GeneratorLoader generatorLoader;
     private final Map<String, IGenerator> allGenerators;
+    private final BentoBox bentoBox;
 
-    public GeneratorManager(TycoonGM plugin, PlayerGeneratorDataManager playerGeneratorDataManager) {
+    public GeneratorManager(TycoonGM plugin, PlayerGeneratorDataManager playerGeneratorDataManager, BentoBox bentoBox) {
         this.plugin=plugin;
+        this.bentoBox=bentoBox;
         this.generatorTypes = new HashMap<>();
         this.allGenerators=new HashMap<>();
         this.playerGeneratorManager = new PlayerGeneratorManager(this, playerGeneratorDataManager);
@@ -64,6 +67,7 @@ public class GeneratorManager {
         return generator;
     }
 
+
     public ItemStack createGeneratorItem(IGenerator generator){
         ItemStack item = new ItemStack(generator.getGeneratorType().getBlockType());
         ItemMeta meta = item.getItemMeta();
@@ -90,4 +94,27 @@ public class GeneratorManager {
     public void removeGenerator(String generatorId){
         allGenerators.remove(generatorId);
     }
+
+    public String getGeneratorIdFromItem(ItemStack item) {
+        if (!isGeneratorItem(item)) return null;
+        NamespacedKey key = new NamespacedKey(plugin, "generator-type");
+        return item.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
+    }
+
+    public IGenerator createGenerator(UUID ownerId, String generatorType, Location location) {
+        GeneratorType type = getGeneratorType(generatorType);
+        if (type == null) {
+            throw new IllegalArgumentException("Invalid generator type: " + generatorType);
+        }
+        return new BasicGenerator(ownerId, type, type.getTiers().get(1), location);
+    }
+
+    public void placeGenerator(IGenerator generator) {
+        // Add the generator to the player's generators
+        playerGeneratorManager.addGenerator(generator.getOwnerId(), generator);
+        // Place the generator block in the world
+        generator.getLocation().getBlock().setType(generator.getGeneratorType().getBlockType());
+        // You might want to add more logic here, like setting up holograms
+    }
+
 }
