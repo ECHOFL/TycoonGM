@@ -23,10 +23,10 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
 
         //MODIFY TO CHECK IF HE IS IN THE PLAYERDATA FILE
-        if(!player.hasPlayedBefore()){
+       // if(!player.hasPlayedBefore()){
             playerGeneratorManager.givePlayerStarterGenerators(player.getUniqueId());
             givePlayerStarterGeneratorItems(player);
-        }
+       // }
     }
 
     private void givePlayerStarterGeneratorItems(Player player){
