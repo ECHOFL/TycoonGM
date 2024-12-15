@@ -12,30 +12,35 @@ import lombok.AllArgsConstructor;
 import me.fliqq.bukkit.tycoongm.generator.IGenerator;
 import me.fliqq.bukkit.tycoongm.generator.manager.GeneratorManager;
 import me.fliqq.bukkit.tycoongm.generator.manager.PlayerGeneratorManager;
+import me.fliqq.bukkit.tycoongm.generator.manager.PlayerGeneratorDataManager;
 
 @AllArgsConstructor
 public class PlayerJoinListener implements Listener {
     private final PlayerGeneratorManager playerGeneratorManager;
     private final GeneratorManager generatorManager;
+    private final PlayerGeneratorDataManager dataManager;
     
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event){
+    public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
-        //MODIFY TO CHECK IF HE IS IN THE PLAYERDATA FILE
-       // if(!player.hasPlayedBefore()){
+        
+        if (!dataManager.hasPlayerData(player.getUniqueId())) {
             playerGeneratorManager.givePlayerStarterGenerators(player.getUniqueId());
             givePlayerStarterGeneratorItems(player);
-       // }
+        } else {
+            playerGeneratorManager.loadPlayerGenerators(player.getUniqueId());
+        }
     }
 
-    private void givePlayerStarterGeneratorItems(Player player){
-        List<IGenerator> generators=playerGeneratorManager.getPlayerGenerators(player.getUniqueId());
-        for(IGenerator generator : generators){
+    private void givePlayerStarterGeneratorItems(Player player) {
+        List<IGenerator> generators = playerGeneratorManager.getPlayerGenerators(player.getUniqueId());
+        for (IGenerator generator : generators) {
             ItemStack item = generatorManager.createGeneratorItem(generator);
-
-            //TODO: ADD CHECK OF INVENTORY
-            player.getInventory().addItem(item);
+            if (player.getInventory().firstEmpty() != -1) {
+                player.getInventory().addItem(item);
+            } else {
+                player.getWorld().dropItemNaturally(player.getLocation(), item);
+            }
         }
     }
 }

@@ -7,22 +7,27 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.fliqq.bukkit.tycoongm.generator.listener.GeneratorListener;
 import me.fliqq.bukkit.tycoongm.generator.listener.PlayerJoinListener;
+import me.fliqq.bukkit.tycoongm.generator.listener.PlayerQuitListener;
 import me.fliqq.bukkit.tycoongm.generator.manager.GeneratorManager;
+import me.fliqq.bukkit.tycoongm.generator.manager.PlayerGeneratorDataManager;
 
 public class TycoonGM extends JavaPlugin
 {
 
     private GeneratorManager generatorManager;
+    private PlayerGeneratorDataManager playerGeneratorDataManager;
 
     @Override
     public void onEnable(){
         saveDefaultConfig();//SAVE JAR CONFIG IF DO NOT EXIST!
         copyDefaultResources("generators");
+ 
 
-
-        generatorManager=new GeneratorManager(this);
+        playerGeneratorDataManager=new PlayerGeneratorDataManager(this);
+        generatorManager=new GeneratorManager(this, playerGeneratorDataManager);
         generatorManager.loadGenerators();
-        getServer().getPluginManager().registerEvents(new PlayerJoinListener(generatorManager.getPlayerGeneratorManager(), generatorManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(generatorManager.getPlayerGeneratorManager(), generatorManager, playerGeneratorDataManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerQuitListener(generatorManager.getPlayerGeneratorManager()), this);
         getServer().getPluginManager().registerEvents(new GeneratorListener(generatorManager), this);
         
         messages();

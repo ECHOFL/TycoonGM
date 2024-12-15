@@ -20,11 +20,13 @@ public class GeneratorManager {
     private final Map<String, GeneratorType> generatorTypes;
     private final PlayerGeneratorManager playerGeneratorManager;
     private final GeneratorLoader generatorLoader;
+    private final Map<String, IGenerator> allGenerators;
 
-    public GeneratorManager(TycoonGM plugin) {
+    public GeneratorManager(TycoonGM plugin, PlayerGeneratorDataManager playerGeneratorDataManager) {
         this.plugin=plugin;
         this.generatorTypes = new HashMap<>();
-        this.playerGeneratorManager = new PlayerGeneratorManager(this);
+        this.allGenerators=new HashMap<>();
+        this.playerGeneratorManager = new PlayerGeneratorManager(this, playerGeneratorDataManager);
         this.generatorLoader = new GeneratorLoader(plugin);
     }
     public PlayerGeneratorManager getPlayerGeneratorManager(){
@@ -45,6 +47,7 @@ public class GeneratorManager {
             throw new IllegalArgumentException("Invalid generator type: " + typeId);
         }
         IGenerator generator = new BasicGenerator(ownerId, type, type.getTiers().get(tier), location);
+        allGenerators.put(generator.getGeneratorId(), generator);
         return generator;
     }
 
@@ -67,5 +70,11 @@ public class GeneratorManager {
         if(item==null || !item.hasItemMeta()) return false;
         NamespacedKey key = new NamespacedKey(plugin, "generator-id");
         return item.getItemMeta().getPersistentDataContainer().has(key, PersistentDataType.STRING);
+    }
+    public IGenerator getGeneratorFromId(String generatorId) {
+        return allGenerators.get(generatorId);
+    }
+    public void removeGenerator(String generatorId){
+        allGenerators.remove(generatorId);
     }
 }
