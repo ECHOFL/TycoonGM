@@ -1,13 +1,14 @@
 package me.fliqq.bukkit.tycoongm.generator;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.bukkit.Location;
 
 public abstract class AbstractGenerator implements IGenerator{
-    private static final AtomicLong SEQUENCE = new AtomicLong(0);
-    
+    private static final Map<UUID, AtomicLong> PLAYER_SEQUENCES = new HashMap<>();    
     protected final String generatorId;
     protected final UUID ownerId;
     protected final GeneratorType type;
@@ -22,8 +23,14 @@ public abstract class AbstractGenerator implements IGenerator{
         this.location=location;
     }
 
+
     private String generateUniqueId(UUID ownerId, String generatorType) {
-        return ownerId.toString() + "-" + generatorType + "-" + SEQUENCE.incrementAndGet();
+        AtomicLong sequence = PLAYER_SEQUENCES.computeIfAbsent(ownerId, k -> new AtomicLong(0));
+        return ownerId.toString() + "-" + generatorType + "-" + sequence.incrementAndGet();
+    }
+
+    public static void initializePlayerSequence(UUID playerId, long maxExistingId) {
+        PLAYER_SEQUENCES.computeIfAbsent(playerId, k -> new AtomicLong(0)).set(maxExistingId);
     }
     @Override
     public String getGeneratorId() {

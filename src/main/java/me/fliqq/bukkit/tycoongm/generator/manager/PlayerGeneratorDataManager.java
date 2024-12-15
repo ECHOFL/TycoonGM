@@ -16,17 +16,13 @@ public class PlayerGeneratorDataManager {
 
     public PlayerGeneratorDataManager(TycoonGM plugin) {
         this.plugin = plugin;
-        this.dataFile = new File(plugin.getDataFolder(), "playerGenerators.yml");
+        this.dataFile = new File(plugin.getDataFolder(), "players_generators.yml");
         loadData();
     }
 
-    public boolean hasPlayerData(UUID playerId) {
-        return dataConfig.contains(playerId.toString());
-    }
-    
     private void loadData() {
         if (!dataFile.exists()) {
-            plugin.saveResource("playerGenerators.yml", false);
+            plugin.saveResource("players_generators.yml", false);
         }
         dataConfig = YamlConfiguration.loadConfiguration(dataFile);
     }
@@ -36,21 +32,27 @@ public class PlayerGeneratorDataManager {
             dataConfig.save(dataFile);
         } catch (IOException e) {
             plugin.getLogger().severe("Could not save data to " + dataFile);
+            e.printStackTrace();
+        }
+    }
+
+    public void setPlayerGenerators(UUID playerId, List<String> generatorIds) {
+        // Remove duplicates before saving
+        List<String> uniqueGeneratorIds = new ArrayList<>(new LinkedHashSet<>(generatorIds));
+        dataConfig.set(playerId.toString(), uniqueGeneratorIds);
+        saveData();
+    }
+
+    public void addGeneratorToPlayer(UUID playerId, String generatorId) {
+        List<String> generatorIds = getPlayerGenerators(playerId);
+        if (!generatorIds.contains(generatorId)) {
+            generatorIds.add(generatorId);
+            setPlayerGenerators(playerId, generatorIds);
         }
     }
 
     public List<String> getPlayerGenerators(UUID playerId) {
         return dataConfig.getStringList(playerId.toString());
-    }
-
-    public void setPlayerGenerators(UUID playerId, List<String> generatorIds) {
-        dataConfig.set(playerId.toString(), generatorIds);
-    }
-
-    public void addGeneratorToPlayer(UUID playerId, String generatorId) {
-        List<String> generators = getPlayerGenerators(playerId);
-        generators.add(generatorId);
-        setPlayerGenerators(playerId, generators);
     }
 
     public void removeGeneratorFromPlayer(UUID playerId, String generatorId) {
@@ -68,6 +70,8 @@ public class PlayerGeneratorDataManager {
         }
         return allGenerators;
     }
-
+    public boolean hasPlayerData(UUID playerId) {
+        return dataConfig.contains(playerId.toString());
+    }
 }
 

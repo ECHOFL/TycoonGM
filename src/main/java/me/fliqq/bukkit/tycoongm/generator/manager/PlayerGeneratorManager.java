@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import me.fliqq.bukkit.tycoongm.generator.BasicGenerator;
+import me.fliqq.bukkit.tycoongm.generator.GeneratorType;
 import me.fliqq.bukkit.tycoongm.generator.IGenerator;
 
 public class PlayerGeneratorManager {
@@ -18,51 +20,28 @@ public class PlayerGeneratorManager {
     public PlayerGeneratorManager(GeneratorManager generatorManager, PlayerGeneratorDataManager dataManager) {
         this.generatorManager = generatorManager;
         this.dataManager = dataManager;
-        loadAllPlayerGenerators();
     }
 
-    private void loadAllPlayerGenerators() {
-        Map<UUID, List<String>> allPlayerGeneratorIds = dataManager.getAllPlayerGenerators();
-        for (Map.Entry<UUID, List<String>> entry : allPlayerGeneratorIds.entrySet()) {
-            UUID playerId = entry.getKey();
-            for (String generatorId : entry.getValue()) {
-                IGenerator generator = generatorManager.getGeneratorFromId(generatorId);
-                if (generator != null) {
-                    addGenerator(playerId, generator);
-                }
+    public void loadPlayerGenerators(UUID playerId) {
+        List<String> generatorIds = dataManager.getPlayerGenerators(playerId);
+        generatorManager.initializePlayerSequence(playerId, generatorIds);
+        for (String generatorId : generatorIds) {
+            IGenerator generator = recreateGenerator(generatorId, playerId);
+            if (generator != null) {
+                addGeneratorWithoutSaving(playerId, generator);
             }
         }
-    }
-    public void loadPlayerGenerators(UUID playerId){
-        List<String> generatorsId = dataManager.getPlayerGenerators(playerId);
-        for(String generatorId : generatorsId){
-            IGenerator generator = generatorManager.getGeneratorFromId(generatorId);
-            if(generator!= null)
-                addGenerator(playerId, generator);
-        }
-    }
-    public void savePlayerGenerators(UUID playerId){
-        List<String> generatorsId = getPlayerGenerators(playerId).stream()
-            .map(IGenerator::getGeneratorId)
-            .collect(Collectors.toList());
-        dataManager.setPlayerGenerators(playerId, generatorsId);
-    }
-
-    public void givePlayerStarterGenerators(UUID playerId) {
-        givePlayerGenerator(playerId, "diamond", 1, 2);
-        givePlayerGenerator(playerId, "emerald", 1, 1);
     }
 
     public void givePlayerGenerator(UUID playerId, String generatorType, int tier, int amount) {
         for (int i = 0; i < amount; i++) {
             IGenerator generator = generatorManager.createGenerator(playerId, generatorType, tier, null);
-            addGenerator(playerId, generator);
-            dataManager.addGeneratorToPlayer(playerId, generator.getGeneratorId());
+            addGeneratorWithoutSaving(playerId, generator);
         }
     }
 
     public void addGenerator(UUID playerId, IGenerator generator) {
-        playerGenerators.computeIfAbsent(playerId, k -> new ArrayList<>()).add(generator);
+        addGeneratorWithoutSaving(playerId, generator);
         savePlayerGenerators(playerId);
     }
 
@@ -72,8 +51,7 @@ public class PlayerGeneratorManager {
 
     public void removeGenerator(UUID playerId, IGenerator generator) {
         List<IGenerator> generators = playerGenerators.get(playerId);
-        if (generators != null) {
-            generators.remove(generator);
+        if (generators != null && generators.remove(generator)) {
             if (generators.isEmpty()) {
                 playerGenerators.remove(playerId);
             }
@@ -82,15 +60,40 @@ public class PlayerGeneratorManager {
         }
     }
 
-    public IGenerator getGeneratorFromId(UUID playerId, String generatorId) {
-        List<IGenerator> generators = playerGenerators.get(playerId);
-        if (generators != null) {
-            for (IGenerator generator : generators) {
-                if (generator.getGeneratorId().equals(generatorId)) {
-                    return generator;
-                }
+
+    private IGenerator recreateGenerator(String generatorId, UUID ownerId) {
+        String[] parts = generatorId.split("-");
+        if (parts.length == 4) {
+            String typeId = parts[1];
+            int tier = Integer.parseInt(parts[3]);
+            GeneratorType type = generatorManager.getGeneratorType(typeId);
+            if (type != null) {
+                return new BasicGenerator(ownerId, type, type.getTiers().get(tier), null);
             }
         }
         return null;
+    }
+    public void givePlayerStarterGenerators(UUID playerId) {
+        List<IGenerator> existingGenerators = getPlayerGenerators(playerId);
+        if (existingGenerators.isEmpty()) {
+            givePlayerGenerator(playerId, "diamond", 1, 2);
+            givePlayerGenerator(playerId, "emerald", 1, 1);
+            savePlayerGenerators(playerId);
+        }
+    }
+
+    private void addGeneratorWithoutSaving(UUID playerId, IGenerator generator) {
+        List<IGenerator> generators = playerGenerators.computeIfAbsent(playerId, k -> new ArrayList<>());
+        if (!generators.contains(generator)) {
+            generators.add(generator);
+        }
+    }
+
+    public void savePlayerGenerators(UUID playerId) {
+        List<String> generatorIds = getPlayerGenerators(playerId).stream()
+            .map(IGenerator::getGeneratorId)
+            .distinct() // Ensure no duplicates
+            .collect(Collectors.toList());
+        dataManager.setPlayerGenerators(playerId, generatorIds);
     }
 }

@@ -1,6 +1,7 @@
 package me.fliqq.bukkit.tycoongm.generator.manager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.bukkit.Location;
@@ -11,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import me.fliqq.bukkit.tycoongm.TycoonGM;
+import me.fliqq.bukkit.tycoongm.generator.AbstractGenerator;
 import me.fliqq.bukkit.tycoongm.generator.BasicGenerator;
 import me.fliqq.bukkit.tycoongm.generator.GeneratorType;
 import me.fliqq.bukkit.tycoongm.generator.IGenerator;
@@ -31,6 +33,17 @@ public class GeneratorManager {
     }
     public PlayerGeneratorManager getPlayerGeneratorManager(){
         return playerGeneratorManager;
+    }
+
+    public void initializePlayerSequence(UUID playerId, List<String> generatorIds) {
+    long maxId = generatorIds.stream()
+        .map(id -> id.split("-"))
+        .filter(parts -> parts.length == 5)
+        .mapToLong(parts -> Long.parseLong(parts[4], 16))
+        .max()
+        .orElse(0L);
+    
+    AbstractGenerator.initializePlayerSequence(playerId, maxId);
     }
 
     public void loadGenerators() {

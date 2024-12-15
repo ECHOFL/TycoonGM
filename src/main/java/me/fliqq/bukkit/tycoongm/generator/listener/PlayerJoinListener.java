@@ -1,6 +1,7 @@
 package me.fliqq.bukkit.tycoongm.generator.listener;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,15 +24,15 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
         
-        if (!dataManager.hasPlayerData(player.getUniqueId())) {
-            playerGeneratorManager.givePlayerStarterGenerators(player.getUniqueId());
+        if (!dataManager.hasPlayerData(playerId)) {
+            playerGeneratorManager.givePlayerStarterGenerators(playerId);
             givePlayerStarterGeneratorItems(player);
         } else {
-            playerGeneratorManager.loadPlayerGenerators(player.getUniqueId());
+            playerGeneratorManager.loadPlayerGenerators(playerId);
         }
     }
-
     private void givePlayerStarterGeneratorItems(Player player) {
         List<IGenerator> generators = playerGeneratorManager.getPlayerGenerators(player.getUniqueId());
         for (IGenerator generator : generators) {
